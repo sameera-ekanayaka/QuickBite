@@ -1,6 +1,9 @@
-# Activity sheet / Assignment instructions
+# Activity sheet and submission reports
 ACTIVITY_SHEET.md
 activity_sheet.md
+SUBMISSION_REPORT.md
+submission_report.md
+submission-report.md
 *.pdf
 
 # Screenshots
@@ -34,6 +37,3 @@ yarn-error.*
 # OS generated files
 .DS_Store
 Thumbs.db
-
-/SUBMISSION_REPORT.md
-/ACTIVITY_SHEET.md
