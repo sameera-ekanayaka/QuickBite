@@ -3,6 +3,9 @@ ACTIVITY_SHEET.md
 activity_sheet.md
 *.pdf
 
+# Screenshots
+screenshots/
+
 # Dependencies
 node_modules/
 
