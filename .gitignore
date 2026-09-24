@@ -34,3 +34,6 @@ yarn-error.*
 # OS generated files
 .DS_Store
 Thumbs.db
+
+/SUBMISSION_REPORT.md
+/ACTIVITY_SHEET.md
