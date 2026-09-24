@@ -9,16 +9,16 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { formatLKR, validateKitchenNotes } from '../utils/formatters';
 import { useCart, MIN_ITEM_QUANTITY, MAX_ITEM_QUANTITY } from '../context/CartContext';
 import Header from '../components/Header';
 import Badge from '../components/Badge';
 import QuantitySelector from '../components/QuantitySelector';
 
-// Item Detail View.
-// Displays comprehensive dish information, portion modification,
-// special kitchen preparation instructions, and dynamic total calculation.
+// Uber-Inspired Item Detail View.
+// Framed in canonical 16px cards, canvas-soft inputs,
+// and a signature black 999px conversion pill.
 export default function ItemDetailScreen({ route, navigation }) {
   const { item } = route.params || {};
   const { addToCart } = useCart();
@@ -28,18 +28,17 @@ export default function ItemDetailScreen({ route, navigation }) {
   const [notesError, setNotesError] = useState('');
   const [addedSuccess, setAddedSuccess] = useState(false);
 
-  // If item is missing (fallback guard)
   if (!item) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <Header title="Item Not Found" showBack navigation={navigation} />
+        <Header title="Item not found" showBack navigation={navigation} />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Selected food item is unavailable.</Text>
+          <Text style={styles.errorText}>Selected item is currently unavailable.</Text>
           <TouchableOpacity
-            style={styles.backButton}
+            style={styles.backPill}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.backButtonText}>Return to Menu</Text>
+            <Text style={styles.backPillText}>Return to menu</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -68,7 +67,6 @@ export default function ItemDetailScreen({ route, navigation }) {
     }
   };
 
-  // Add item to shared cart state
   const handleAddToCart = () => {
     const check = validateKitchenNotes(kitchenNotes);
     if (!check.isValid) {
@@ -79,13 +77,11 @@ export default function ItemDetailScreen({ route, navigation }) {
     addToCart(item, quantity, check.sanitized);
     setAddedSuccess(true);
 
-    // Provide visual confirmation, then navigate back
     setTimeout(() => {
       navigation.navigate('Cart');
-    }, 800);
+    }, 750);
   };
 
-  // Live item total calculation
   const totalItemPrice = item.price * quantity;
 
   return (
@@ -102,15 +98,12 @@ export default function ItemDetailScreen({ route, navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero Banner Card */}
+        {/* Hero Card */}
         <View style={styles.heroCard}>
-          <View style={styles.heroHeader}>
-            <Badge label={item.counter} variant="primary" />
-            <Badge label={item.dietary || 'Standard'} variant="info" />
-            <Badge
-              label={`Spice: ${item.spiceLevel || 'Mild'}`}
-              variant={item.spiceLevel === 'Spicy' ? 'danger' : 'warning'}
-            />
+          <View style={styles.heroPillsRow}>
+            <Badge label={item.counter} variant="primary" size="small" />
+            <Badge label={item.dietary || 'Standard'} variant="outline" size="small" />
+            <Badge label={`Spice: ${item.spiceLevel || 'Mild'}`} variant="default" size="small" />
           </View>
 
           <Text style={styles.dishTitle}>{item.name}</Text>
@@ -134,24 +127,23 @@ export default function ItemDetailScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* Ingredients & Dietary Section */}
-        <View style={styles.detailsCard}>
-          <Text style={styles.sectionHeader}>Ingredients & Details</Text>
-          <Text style={styles.ingredientsText}>{item.ingredients}</Text>
-
-          <View style={styles.subsidyNotice}>
+        {/* Ingredients Card */}
+        <View style={styles.cardContainer}>
+          <Text style={styles.cardHeading}>Ingredients & details</Text>
+          <Text style={styles.ingredientsBody}>{item.ingredients}</Text>
+          <View style={styles.subsidyNoticeRow}>
             <Text style={styles.subsidyNoticeText}>
-              Subsidized student rate applied by the University of Kelaniya Canteen Welfare Board.
+              Subsidized student rate applied by the Canteen Welfare Board.
             </Text>
           </View>
         </View>
 
-        {/* Quantity Selection Section */}
+        {/* Quantity Card */}
         <View style={styles.quantityCard}>
           <View>
-            <Text style={styles.sectionHeader}>Select Quantity</Text>
+            <Text style={styles.cardHeading}>Quantity</Text>
             <Text style={styles.quantitySubtext}>
-              Maximum {MAX_ITEM_QUANTITY} portions per order
+              Max {MAX_ITEM_QUANTITY} portions per order
             </Text>
           </View>
 
@@ -164,21 +156,19 @@ export default function ItemDetailScreen({ route, navigation }) {
           />
         </View>
 
-        {/* Special Instructions for Canteen Kitchen */}
-        <View style={styles.instructionsCard}>
+        {/* Special Instructions Card */}
+        <View style={styles.cardContainer}>
           <View style={styles.instructionsHeaderRow}>
-            <Text style={styles.sectionHeader}>Kitchen Instructions (Optional)</Text>
-            <Text style={styles.characterCount}>
-              {kitchenNotes.length}/120
-            </Text>
+            <Text style={styles.cardHeading}>Kitchen instructions (optional)</Text>
+            <Text style={styles.charCount}>{kitchenNotes.length}/120</Text>
           </View>
           <TextInput
             style={[
-              styles.notesInput,
-              notesError ? styles.notesInputError : null,
+              styles.notesInputRow,
+              notesError ? styles.notesInputRowError : null,
             ]}
             placeholder="e.g. Extra spicy chilli paste, separate dhal gravy..."
-            placeholderTextColor={COLORS.textMuted}
+            placeholderTextColor={COLORS.mute}
             value={kitchenNotes}
             onChangeText={handleNotesChange}
             maxLength={120}
@@ -186,33 +176,30 @@ export default function ItemDetailScreen({ route, navigation }) {
             numberOfLines={3}
           />
           {notesError ? (
-            <Text style={styles.fieldErrorText}>{notesError}</Text>
+            <Text style={styles.errorTextSmall}>{notesError}</Text>
           ) : (
-            <Text style={styles.inputHint}>
-              Instructions will appear directly on the canteen kitchen ticket.
+            <Text style={styles.hintText}>
+              Instructions will appear on your canteen kitchen ticket.
             </Text>
           )}
         </View>
       </ScrollView>
 
-      {/* Sticky Bottom Add to Cart Bar */}
+      {/* Sticky Bottom Bar */}
       <View style={styles.bottomBar}>
-        <View style={styles.totalPriceSection}>
-          <Text style={styles.totalLabel}>Total ({quantity}x)</Text>
-          <Text style={styles.totalAmount}>{formatLKR(totalItemPrice)}</Text>
+        <View>
+          <Text style={styles.bottomBarLabel}>Total ({quantity}x)</Text>
+          <Text style={styles.bottomBarPrice}>{formatLKR(totalItemPrice)}</Text>
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.addToCartButton,
-            addedSuccess && styles.addToCartButtonSuccess,
-          ]}
+          style={[styles.addOrderPill, addedSuccess && styles.addOrderPillSuccess]}
           onPress={handleAddToCart}
           activeOpacity={0.85}
           accessibilityLabel="Add to order"
         >
-          <Text style={styles.addToCartButtonText}>
-            {addedSuccess ? 'Added to Cart' : `Add to Cart - ${formatLKR(totalItemPrice)}`}
+          <Text style={styles.addOrderPillText}>
+            {addedSuccess ? 'Added to order' : `Add to order - ${formatLKR(totalItemPrice)}`}
           </Text>
         </TouchableOpacity>
       </View>
@@ -223,7 +210,7 @@ export default function ItemDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
   scrollContent: {
     padding: SPACING.lg,
@@ -236,45 +223,44 @@ const styles = StyleSheet.create({
     padding: SPACING.xl,
   },
   errorText: {
-    fontSize: FONTS.sizes.md,
-    color: COLORS.danger,
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.body,
     marginBottom: SPACING.lg,
   },
-  backButton: {
+  backPill: {
     backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: RADIUS.pill,
   },
-  backButtonText: {
-    color: COLORS.white,
+  backPillText: {
+    color: COLORS.onPrimary,
     fontWeight: FONTS.weights.bold,
   },
   heroCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
-  heroHeader: {
+  heroPillsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.xs,
     marginBottom: SPACING.md,
   },
   dishTitle: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.displaySm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
+    letterSpacing: -0.3,
     marginBottom: 6,
-    lineHeight: 28,
   },
   dishDescription: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     lineHeight: 22,
     marginBottom: SPACING.lg,
   },
@@ -282,11 +268,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvasSoft,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   metaItem: {
     alignItems: 'center',
@@ -294,60 +278,56 @@ const styles = StyleSheet.create({
   },
   metaDivider: {
     width: 1,
-    height: 28,
-    backgroundColor: COLORS.border,
+    height: 24,
+    backgroundColor: COLORS.surfacePressed,
   },
   metaLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
     marginBottom: 2,
   },
   metaValue: {
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.ink,
   },
   metaPrice: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
-  detailsCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+  cardContainer: {
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
-  sectionHeader: {
-    fontSize: FONTS.sizes.md,
+  cardHeading: {
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: 6,
   },
-  ingredientsText: {
-    fontSize: FONTS.sizes.sm,
-    color: COLORS.textSecondary,
+  ingredientsBody: {
+    fontSize: FONTS.sizes.xs,
+    color: COLORS.body,
     lineHeight: 20,
   },
-  subsidyNotice: {
+  subsidyNoticeRow: {
     marginTop: SPACING.md,
-    backgroundColor: COLORS.successLight,
+    backgroundColor: COLORS.canvasSoft,
     padding: SPACING.sm,
     borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.success,
   },
   subsidyNoticeText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.success,
-    fontWeight: FONTS.weights.medium,
+    color: COLORS.body,
   },
   quantityCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     borderWidth: 1,
@@ -356,21 +336,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...SHADOWS.small,
   },
   quantitySubtext: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     marginTop: 2,
-  },
-  instructionsCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
-    padding: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
   instructionsHeaderRow: {
     flexDirection: 'row',
@@ -378,33 +348,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  characterCount: {
+  charCount: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
-  notesInput: {
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+  notesInputRow: {
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.md, // 8px
     padding: SPACING.md,
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     textAlignVertical: 'top',
     minHeight: 70,
   },
-  notesInputError: {
+  notesInputRowError: {
+    borderWidth: 1,
     borderColor: COLORS.danger,
     backgroundColor: COLORS.dangerLight,
   },
-  fieldErrorText: {
+  errorTextSmall: {
     fontSize: FONTS.sizes.xs,
     color: COLORS.danger,
     marginTop: 4,
   },
-  inputHint: {
+  hintText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     marginTop: 4,
   },
   bottomBar: {
@@ -412,7 +381,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     paddingHorizontal: SPACING.lg,
@@ -420,34 +389,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...SHADOWS.medium,
   },
-  totalPriceSection: {
-    justifyContent: 'center',
-  },
-  totalLabel: {
+  bottomBarLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
-  totalAmount: {
-    fontSize: FONTS.sizes.lg,
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
-  },
-  addToCartButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.xl,
-    borderRadius: RADIUS.lg,
-    alignItems: 'center',
-  },
-  addToCartButtonSuccess: {
-    backgroundColor: COLORS.success,
-  },
-  addToCartButtonText: {
-    color: COLORS.white,
+  bottomBarPrice: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
+    color: COLORS.ink,
+  },
+  addOrderPill: {
+    backgroundColor: COLORS.primary, // Signature black pill
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: RADIUS.pill, // 999px pill
+    alignItems: 'center',
+  },
+  addOrderPillSuccess: {
+    backgroundColor: COLORS.hairlineMid,
+  },
+  addOrderPillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.semibold,
   },
 });

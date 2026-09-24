@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { MIN_ITEM_QUANTITY, MAX_ITEM_QUANTITY } from '../context/CartContext';
 
-// Reusable stepper component for adjusting meal portions.
-// Enforces minimum (1) and maximum (20) quantity bounds with visual feedback.
+// Uber-Inspired Quantity Stepper Component.
+// Encased in a signature 999px pill container with crisp tactile buttons.
 export default function QuantitySelector({
   quantity,
   onIncrement,
@@ -27,6 +27,7 @@ export default function QuantitySelector({
         ]}
         onPress={onDecrement}
         disabled={isMin}
+        activeOpacity={0.7}
         accessibilityLabel="Decrease quantity"
       >
         <Text style={[styles.buttonText, isMin && styles.buttonTextDisabled]}>-</Text>
@@ -46,6 +47,7 @@ export default function QuantitySelector({
         ]}
         onPress={onIncrement}
         disabled={isMax}
+        activeOpacity={0.7}
         accessibilityLabel="Increase quantity"
       >
         <Text style={[styles.buttonText, isMax && styles.buttonTextDisabled]}>+</Text>
@@ -58,55 +60,54 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 2,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // Signature 999px pill shape
+    padding: 3,
   },
   containerSmall: {
-    padding: 1,
+    padding: 2,
   },
   button: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
+    borderRadius: RADIUS.full,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.sm,
+    backgroundColor: COLORS.canvas,
   },
   buttonSmall: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
   },
   buttonDisabled: {
-    backgroundColor: COLORS.border,
-    opacity: 0.5,
+    backgroundColor: 'transparent',
+    opacity: 0.3,
   },
   buttonText: {
     fontSize: 18,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
+    lineHeight: 20,
   },
   buttonTextDisabled: {
-    color: COLORS.disabledText,
+    color: COLORS.mute,
   },
   valueContainer: {
-    minWidth: 36,
+    minWidth: 32,
     paddingHorizontal: SPACING.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   valueContainerSmall: {
-    minWidth: 26,
+    minWidth: 24,
     paddingHorizontal: SPACING.xs,
   },
   valueText: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   valueTextSmall: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
   },
 });

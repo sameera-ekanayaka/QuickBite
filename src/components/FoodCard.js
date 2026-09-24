@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { formatLKR } from '../utils/formatters';
 import Badge from './Badge';
 
-// Reusable menu item card.
-// Shows dish name, canteen counter, prep time, price in LKR,
-// and direct quick-add action.
+// Uber-Inspired Food Item Card.
+// Shaped in canonical 16px rounded card with clean typography,
+// metadata pill chips, and a signature black 999px CTA pill.
 export default function FoodCard({ item, onPress, onQuickAdd }) {
   const [justAdded, setJustAdded] = useState(false);
 
@@ -16,13 +16,6 @@ export default function FoodCard({ item, onPress, onQuickAdd }) {
       setJustAdded(true);
       setTimeout(() => setJustAdded(false), 1200);
     }
-  };
-
-  // Determine spice badge variant
-  const getSpiceVariant = (level) => {
-    if (level === 'Very Spicy' || level === 'Spicy') return 'danger';
-    if (level === 'Medium') return 'warning';
-    return 'outline';
   };
 
   return (
@@ -35,12 +28,12 @@ export default function FoodCard({ item, onPress, onQuickAdd }) {
       <View style={styles.headerRow}>
         <Badge
           label={item.counter}
-          variant="primary"
+          variant="outline"
           size="small"
         />
         <Badge
           label={item.spiceLevel || 'Mild'}
-          variant={getSpiceVariant(item.spiceLevel)}
+          variant={item.spiceLevel === 'Spicy' || item.spiceLevel === 'Very Spicy' ? 'danger' : 'default'}
           size="small"
         />
       </View>
@@ -55,11 +48,16 @@ export default function FoodCard({ item, onPress, onQuickAdd }) {
       </View>
 
       <View style={styles.metaRow}>
-        <Text style={styles.prepTime}>
+        <Text style={styles.metaText}>
           Prep: {item.preparationTime}
         </Text>
-        <Text style={styles.calories}>
+        <Text style={styles.metaDot}>•</Text>
+        <Text style={styles.metaText}>
           {item.calories}
+        </Text>
+        <Text style={styles.metaDot}>•</Text>
+        <Text style={styles.metaText}>
+          {item.dietary || 'Standard'}
         </Text>
       </View>
 
@@ -70,15 +68,15 @@ export default function FoodCard({ item, onPress, onQuickAdd }) {
         </View>
 
         <TouchableOpacity
-          style={[styles.addButton, justAdded && styles.addButtonSuccess]}
+          style={[styles.addPill, justAdded && styles.addPillSuccess]}
           onPress={handleQuickAdd}
           activeOpacity={0.8}
-          accessibilityLabel={`Add ${item.name} to cart`}
+          accessibilityLabel={`Add ${item.name} to order`}
         >
           <Text
             style={[
-              styles.addButtonText,
-              justAdded && styles.addButtonTextSuccess,
+              styles.addPillText,
+              justAdded && styles.addPillTextSuccess,
             ]}
           >
             {justAdded ? 'Added' : '+ Add'}
@@ -91,13 +89,12 @@ export default function FoodCard({ item, onPress, onQuickAdd }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.md,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // Canonical 16px card radius
+    padding: SPACING.lg,
     marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOWS.small,
   },
   headerRow: {
     flexDirection: 'row',
@@ -111,71 +108,74 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    lineHeight: 20,
+    color: COLORS.ink,
+    lineHeight: 22,
     marginBottom: 4,
+    letterSpacing: -0.2,
   },
   itemDescription: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
-    lineHeight: 16,
+    color: COLORS.body,
+    lineHeight: 18,
   },
   metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: SPACING.xs,
     paddingTop: 4,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.divider,
   },
-  prepTime: {
+  metaText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
-  calories: {
-    fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+  metaDot: {
+    fontSize: 10,
+    color: COLORS.mute,
+    marginHorizontal: 6,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: SPACING.xs,
+    marginTop: SPACING.sm,
+    paddingTop: SPACING.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.divider,
   },
   priceContainer: {
     flex: 1,
   },
   priceLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   priceValue: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
-  addButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 7,
-    paddingHorizontal: 16,
-    borderRadius: RADIUS.md,
+  addPill: {
+    backgroundColor: COLORS.primary, // Signature black pill
+    paddingVertical: 9,
+    paddingHorizontal: 18,
+    borderRadius: RADIUS.pill, // 999px pill
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addButtonSuccess: {
-    backgroundColor: COLORS.successLight,
+  addPillSuccess: {
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
-    borderColor: COLORS.success,
+    borderColor: COLORS.ink,
   },
-  addButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.semibold,
+  addPillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.xs,
+    fontWeight: FONTS.weights.medium,
   },
-  addButtonTextSuccess: {
-    color: COLORS.success,
+  addPillTextSuccess: {
+    color: COLORS.ink,
+    fontWeight: FONTS.weights.bold,
   },
 });

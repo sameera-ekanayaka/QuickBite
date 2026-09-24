@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { useCart } from '../context/CartContext';
 
-// Standardized navigation header component for QuickBite.
-// Provides contextual back navigation, brand identification,
-// and real-time cart indicator badge.
+// Uber-Inspired Top Navigation Bar.
+// Restrained black-and-white header with pill navigation controls
+// and geometric brand monogram.
 export default function Header({
   title = 'QuickBite',
   subtitle = 'University of Kelaniya Canteen',
@@ -42,15 +42,16 @@ export default function Header({
       <View style={styles.leftSection}>
         {showBack ? (
           <TouchableOpacity
-            style={styles.actionButton}
+            style={styles.backPill}
             onPress={handleBackPress}
+            activeOpacity={0.7}
             accessibilityLabel="Go back"
           >
-            <Text style={styles.backButtonText}>Back</Text>
+            <Text style={styles.backPillText}>Back</Text>
           </TouchableOpacity>
         ) : (
-          <View style={styles.brandIcon}>
-            <Text style={styles.brandIconText}>QB</Text>
+          <View style={styles.brandMonogram}>
+            <Text style={styles.brandMonogramText}>QB</Text>
           </View>
         )}
 
@@ -69,11 +70,19 @@ export default function Header({
       <View style={styles.rightSection}>
         {showCart && (
           <TouchableOpacity
-            style={styles.cartButton}
+            style={[styles.cartPill, itemCount > 0 && styles.cartPillActive]}
             onPress={handleCartPress}
+            activeOpacity={0.8}
             accessibilityLabel="Open Cart"
           >
-            <Text style={styles.cartButtonLabel}>Cart</Text>
+            <Text
+              style={[
+                styles.cartPillLabel,
+                itemCount > 0 && styles.cartPillLabelActive,
+              ]}
+            >
+              Cart
+            </Text>
             {itemCount > 0 && (
               <View style={styles.badgeCount}>
                 <Text style={styles.badgeCountText}>
@@ -86,11 +95,12 @@ export default function Header({
 
         {showProfile && (
           <TouchableOpacity
-            style={styles.profileButton}
+            style={styles.profilePill}
             onPress={handleProfilePress}
+            activeOpacity={0.8}
             accessibilityLabel="Open Profile"
           >
-            <Text style={styles.profileButtonText}>User</Text>
+            <Text style={styles.profilePillText}>Account</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -103,47 +113,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.md,
     paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    ...SHADOWS.small,
   },
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  brandIcon: {
-    width: 38,
-    height: 38,
+  brandMonogram: {
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary, // Solid black
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,
   },
-  brandIconText: {
-    color: COLORS.white,
+  brandMonogramText: {
+    color: COLORS.onPrimary,
     fontWeight: FONTS.weights.bold,
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     letterSpacing: 0.5,
   },
-  actionButton: {
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+  backPill: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill
     marginRight: SPACING.md,
   },
-  backButtonText: {
-    fontSize: FONTS.sizes.sm,
+  backPillText: {
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.semibold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
   titleContainer: {
     flex: 1,
@@ -151,11 +158,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
+    letterSpacing: -0.2,
   },
   subtitle: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.body,
     marginTop: 1,
   },
   rightSection: {
@@ -163,47 +171,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.sm,
   },
-  cartButton: {
+  cartPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: COLORS.primaryMuted,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill
   },
-  cartButtonLabel: {
-    fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+  cartPillActive: {
+    backgroundColor: COLORS.primary, // Polarity flip to black on active cart
+  },
+  cartPillLabel: {
+    fontSize: FONTS.sizes.xs,
+    fontWeight: FONTS.weights.semibold,
+    color: COLORS.ink,
+  },
+  cartPillLabelActive: {
+    color: COLORS.onPrimary,
   },
   badgeCount: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.onPrimary,
     borderRadius: RADIUS.full,
     paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingVertical: 2,
     marginLeft: 6,
     minWidth: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeCountText: {
-    color: COLORS.white,
+    color: COLORS.primary,
     fontSize: 10,
     fontWeight: FONTS.weights.bold,
   },
-  profileButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+  profilePill: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill
   },
-  profileButtonText: {
-    fontSize: FONTS.sizes.sm,
+  profilePillText: {
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.semibold,
-    color: COLORS.textSecondary,
+    color: COLORS.ink,
   },
 });

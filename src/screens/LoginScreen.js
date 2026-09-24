@@ -11,13 +11,13 @@ import {
   Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { validateEmail, validateStudentId, validatePassword } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
 
-// Student Login & Guest Access Screen.
-// Provides robust credentials validation, support for University of Kelaniya
-// student email/ID format, and instant guest mode access.
+// Uber-Inspired Student Authentication Screen.
+// Features a clean 16px card container, 8px canvas-soft input rows,
+// and canonical 999px black pill action buttons.
 export default function LoginScreen({ navigation }) {
   const { login, loginAsGuest } = useAuth();
 
@@ -97,12 +97,12 @@ export default function LoginScreen({ navigation }) {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <View style={styles.brandBadge}>
-              <Text style={styles.brandBadgeText}>QuickBite</Text>
+            <View style={styles.brandMonogram}>
+              <Text style={styles.brandMonogramText}>QB</Text>
             </View>
-            <Text style={styles.title}>Canteen Portal</Text>
+            <Text style={styles.title}>What's your student ID?</Text>
             <Text style={styles.subtitle}>
-              University of Kelaniya - Student Pre-Ordering
+              University of Kelaniya canteen pre-ordering portal
             </Text>
           </View>
 
@@ -114,11 +114,11 @@ export default function LoginScreen({ navigation }) {
 
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Student Email or Registration ID</Text>
+              <Text style={styles.inputLabel}>Student email or registration ID</Text>
               <TextInput
-                style={[styles.input, identifierError ? styles.inputError : null]}
+                style={[styles.inputRow, identifierError ? styles.inputRowError : null]}
                 placeholder="e.g. ps2021045@stu.kln.ac.lk or PS/2021/045"
-                placeholderTextColor={COLORS.textMuted}
+                placeholderTextColor={COLORS.mute}
                 value={identifier}
                 onChangeText={(text) => {
                   setIdentifier(text);
@@ -129,19 +129,15 @@ export default function LoginScreen({ navigation }) {
               />
               {identifierError ? (
                 <Text style={styles.fieldErrorText}>{identifierError}</Text>
-              ) : (
-                <Text style={styles.inputHint}>
-                  Use your official University of Kelaniya student credentials
-                </Text>
-              )}
+              ) : null}
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Password</Text>
               <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Enter your canteen password"
-                placeholderTextColor={COLORS.textMuted}
+                style={[styles.inputRow, passwordError ? styles.inputRowError : null]}
+                placeholder="Enter password"
+                placeholderTextColor={COLORS.mute}
                 value={password}
                 onChangeText={(text) => {
                   setPassword(text);
@@ -151,46 +147,43 @@ export default function LoginScreen({ navigation }) {
               />
               {passwordError ? (
                 <Text style={styles.fieldErrorText}>{passwordError}</Text>
-              ) : (
-                <Text style={styles.inputHint}>Minimum 6 characters required</Text>
-              )}
+              ) : null}
             </View>
 
+            {/* Signature Uber Black CTA Pill */}
             <TouchableOpacity
-              style={styles.signInButton}
+              style={styles.primaryPill}
               onPress={handleLogin}
               activeOpacity={0.85}
               accessibilityLabel="Sign in with student account"
             >
-              <Text style={styles.signInButtonText}>Sign In to Order</Text>
+              <Text style={styles.primaryPillText}>Sign in to order</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.demoButton}
+              style={styles.demoFillButton}
               onPress={fillDemoCredentials}
               activeOpacity={0.7}
               accessibilityLabel="Autofill student demo credentials"
             >
-              <Text style={styles.demoButtonText}>Autofill Demo Student ID</Text>
+              <Text style={styles.demoFillText}>Autofill demo credentials</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.dividerContainer}>
+          <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerLabel}>OR</Text>
+            <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
+          {/* Secondary Guest Pill */}
           <TouchableOpacity
-            style={styles.guestButton}
+            style={styles.guestPill}
             onPress={handleGuestAccess}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
             accessibilityLabel="Continue as guest student"
           >
-            <Text style={styles.guestButtonText}>Continue as Guest Student</Text>
-            <Text style={styles.guestButtonSubtext}>
-              Instant order access without logging in
-            </Text>
+            <Text style={styles.guestPillText}>Continue as guest student</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -201,7 +194,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
   keyboardContainer: {
     flex: 1,
@@ -212,76 +205,74 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
+    marginBottom: SPACING.xxl,
+  },
+  brandMonogram: {
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.md, // 8px
+    backgroundColor: COLORS.primary, // Black
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.lg,
   },
-  brandBadge: {
-    backgroundColor: COLORS.primaryMuted,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    marginBottom: SPACING.sm,
-  },
-  brandBadgeText: {
-    color: COLORS.primary,
+  brandMonogramText: {
+    color: COLORS.onPrimary,
     fontWeight: FONTS.weights.bold,
-    fontSize: FONTS.sizes.xs,
+    fontSize: FONTS.sizes.md,
     letterSpacing: 0.5,
   },
   title: {
     fontSize: FONTS.sizes.title,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
+    letterSpacing: -0.5,
+    lineHeight: 38,
   },
   subtitle: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-    textAlign: 'center',
+    color: COLORS.body,
+    marginTop: 6,
   },
   errorBanner: {
     backgroundColor: COLORS.dangerLight,
-    borderLeftWidth: 4,
+    borderLeftWidth: 3,
     borderLeftColor: COLORS.danger,
     padding: SPACING.md,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.md,
     marginBottom: SPACING.lg,
   },
   errorBannerText: {
     color: COLORS.danger,
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.medium,
   },
   formCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
-    padding: SPACING.xl,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOWS.small,
+    padding: SPACING.xl,
   },
   inputGroup: {
     marginBottom: SPACING.lg,
   },
   inputLabel: {
-    fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontSize: FONTS.sizes.xs,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.ink,
     marginBottom: 6,
   },
-  input: {
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.md,
+  inputRow: {
+    backgroundColor: COLORS.canvasSoft, // '#EFEFEF'
+    borderRadius: RADIUS.md, // 8px
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    fontSize: FONTS.sizes.md,
-    color: COLORS.textPrimary,
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.ink,
   },
-  inputError: {
+  inputRowError: {
+    borderWidth: 1,
     borderColor: COLORS.danger,
     backgroundColor: COLORS.dangerLight,
   },
@@ -291,35 +282,30 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: FONTS.weights.medium,
   },
-  inputHint: {
-    fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
-    marginTop: 4,
-  },
-  signInButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.md,
-    borderRadius: RADIUS.md,
+  primaryPill: {
+    backgroundColor: COLORS.primary, // '#000000'
+    paddingVertical: SPACING.lg,
+    borderRadius: RADIUS.pill, // 999px pill
     alignItems: 'center',
     marginTop: SPACING.xs,
   },
-  signInButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.md,
-    fontWeight: FONTS.weights.bold,
+  primaryPillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.semibold,
   },
-  demoButton: {
+  demoFillButton: {
     marginTop: SPACING.md,
     paddingVertical: SPACING.xs,
     alignItems: 'center',
   },
-  demoButtonText: {
-    color: COLORS.primary,
+  demoFillText: {
+    color: COLORS.body,
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.semibold,
+    fontWeight: FONTS.weights.medium,
     textDecorationLine: 'underline',
   },
-  dividerContainer: {
+  dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: SPACING.xl,
@@ -329,30 +315,20 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: COLORS.border,
   },
-  dividerLabel: {
+  dividerText: {
     paddingHorizontal: SPACING.md,
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.mute,
   },
-  guestButton: {
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    borderRadius: RADIUS.lg,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
+  guestPill: {
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill
+    paddingVertical: SPACING.lg,
     alignItems: 'center',
-    ...SHADOWS.small,
   },
-  guestButtonText: {
-    fontSize: FONTS.sizes.md,
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-  },
-  guestButtonSubtext: {
-    fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
-    marginTop: 2,
+  guestPillText: {
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.semibold,
+    color: COLORS.ink,
   },
 });
