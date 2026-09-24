@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { ORDER_STATUSES } from '../context/OrderContext';
 
-// Visual pipeline tracker for order lifecycle.
-// Displays numbered stages with clear progression states.
+// Uber-Inspired Order Pipeline Tracker.
+// High-contrast monochromatic stage indicators with geometric connectors.
 export default function StatusTracker({ currentStatus }) {
   const currentIndex = ORDER_STATUSES.indexOf(currentStatus);
 
@@ -93,8 +93,8 @@ export default function StatusTracker({ currentStatus }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px card
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -116,76 +116,72 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
     marginBottom: 6,
   },
   circleCompleted: {
-    backgroundColor: COLORS.successLight,
-    borderColor: COLORS.success,
+    backgroundColor: COLORS.primary, // Black
   },
   circleCurrent: {
-    backgroundColor: COLORS.primaryMuted,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primary, // Black
+    borderWidth: 2,
+    borderColor: COLORS.surfacePressed,
   },
   circleUpcoming: {
-    backgroundColor: COLORS.background,
-    borderColor: COLORS.borderDark,
+    backgroundColor: COLORS.canvasSoft,
   },
   circleText: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
   circleTextCompleted: {
-    color: COLORS.success,
+    color: COLORS.onPrimary,
   },
   circleTextCurrent: {
-    color: COLORS.primary,
+    color: COLORS.onPrimary,
   },
   circleTextUpcoming: {
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   stepLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textAlign: 'center',
     fontWeight: FONTS.weights.medium,
   },
   stepLabelCurrent: {
-    color: COLORS.primary,
+    color: COLORS.ink,
     fontWeight: FONTS.weights.bold,
   },
   stepLabelCompleted: {
-    color: COLORS.success,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.ink,
+    fontWeight: FONTS.weights.medium,
   },
   connector: {
     flex: 1,
     height: 2,
-    marginTop: 17, // Vertically center with circles
+    marginTop: 17, // Vertically center with 34px circles
     marginHorizontal: 2,
   },
   connectorActive: {
-    backgroundColor: COLORS.success,
+    backgroundColor: COLORS.primary,
   },
   connectorInactive: {
-    backgroundColor: COLORS.border,
+    backgroundColor: COLORS.canvasSoft,
   },
   statusDescriptionBox: {
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
   },
   currentStatusTitle: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
     marginBottom: 4,
   },
   statusDescriptionText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     lineHeight: 18,
   },
 });

@@ -8,22 +8,19 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { formatLKR } from '../utils/formatters';
 import { useOrders, ORDER_STATUSES } from '../context/OrderContext';
 import Header from '../components/Header';
 import Badge from '../components/Badge';
 import StatusTracker from '../components/StatusTracker';
 
-// Order Confirmation and Live Status Tracking Screen.
-// Fulfills Activity Sheet Requirements 4, 11:
-// - Displays generated order number and estimated pickup time.
-// - Provides multi-stage progression: Placed -> Preparing -> Ready for pickup -> Completed.
-// - Features interactive simulation button to cycle through status states in real time.
+// Uber-Inspired Order Confirmation & Tracking Screen.
+// Clean monochromatic receipt chrome, verification token badge,
+// and simulation pill controls.
 export default function OrderTrackingScreen({ route, navigation }) {
   const { activeOrders, currentOrder, advanceOrderStatus, orderHistory } = useOrders();
 
-  // Find order by param ID, or fall back to currentOrder, or most recent order
   const orderId = route.params?.orderId;
   const activeOrder =
     (orderId ? activeOrders.find((o) => o.id === orderId) : null) ||
@@ -31,21 +28,20 @@ export default function OrderTrackingScreen({ route, navigation }) {
     activeOrders[0] ||
     orderHistory[0];
 
-  // If no order exists at all
   if (!activeOrder) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <Header title="Order Status" showBack navigation={navigation} />
+        <Header title="Order status" showBack navigation={navigation} />
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No Active Order Found</Text>
+          <Text style={styles.emptyTitle}>No active order found</Text>
           <Text style={styles.emptySubtitle}>
             Place a canteen order from the menu to track preparation status.
           </Text>
           <TouchableOpacity
-            style={styles.browseButton}
+            style={styles.browsePill}
             onPress={() => navigation.navigate('Home')}
           >
-            <Text style={styles.browseButtonText}>Go to Canteen Menu</Text>
+            <Text style={styles.browsePillText}>Go to canteen menu</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -59,7 +55,6 @@ export default function OrderTrackingScreen({ route, navigation }) {
       ? ORDER_STATUSES[statusIndex + 1]
       : null;
 
-  // Advance order status simulating kitchen lifecycle
   const handleSimulateStatus = () => {
     if (activeOrder.id) {
       advanceOrderStatus(activeOrder.id);
@@ -70,7 +65,7 @@ export default function OrderTrackingScreen({ route, navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <Header
-        title="Order Tracking"
+        title="Order tracking"
         subtitle={`Order ${activeOrder.id}`}
         showBack
         navigation={navigation}
@@ -89,76 +84,76 @@ export default function OrderTrackingScreen({ route, navigation }) {
             </View>
             <Badge
               label={activeOrder.status}
-              variant={isCompleted ? 'success' : 'primary'}
+              variant={isCompleted ? 'primary' : 'outline'}
             />
           </View>
 
           <View style={styles.ticketDetails}>
             <View style={styles.ticketRow}>
-              <Text style={styles.ticketLabel}>Pickup Counter:</Text>
+              <Text style={styles.ticketLabel}>Pickup counter:</Text>
               <Text style={styles.ticketValue}>{activeOrder.counter}</Text>
             </View>
             <View style={styles.ticketRow}>
-              <Text style={styles.ticketLabel}>Pickup Interval:</Text>
+              <Text style={styles.ticketLabel}>Pickup interval:</Text>
               <Text style={styles.ticketValue}>{activeOrder.pickupTimeSlot}</Text>
             </View>
             <View style={styles.ticketRow}>
-              <Text style={styles.ticketLabel}>Estimated Ready:</Text>
-              <Text style={styles.ticketValueHighlight}>Within 10-15 Minutes</Text>
+              <Text style={styles.ticketLabel}>Estimated ready:</Text>
+              <Text style={styles.ticketValueHighlight}>Ready in 10-15 minutes</Text>
             </View>
             <View style={styles.ticketRow}>
-              <Text style={styles.ticketLabel}>Student Recipient:</Text>
+              <Text style={styles.ticketLabel}>Recipient:</Text>
               <Text style={styles.ticketValue}>
                 {activeOrder.studentName} ({activeOrder.studentId})
               </Text>
             </View>
           </View>
 
-          {/* Counter Pickup Verification Code */}
+          {/* Verification Token Box */}
           <View style={styles.verificationBox}>
-            <Text style={styles.verificationLabel}>Counter Pickup Token</Text>
+            <Text style={styles.verificationLabel}>Counter pickup token</Text>
             <Text style={styles.verificationToken}>
               {activeOrder.id.replace('UOK-', '')}
             </Text>
             <Text style={styles.verificationHint}>
-              Present this token or your student ID at {activeOrder.counter}
+              Show this token at {activeOrder.counter}
             </Text>
           </View>
         </View>
 
-        {/* Visual Lifecycle Pipeline Component */}
+        {/* Status Pipeline Component */}
         <StatusTracker currentStatus={activeOrder.status} />
 
         {/* Simulation Controls for Evaluators */}
         <View style={styles.simulationCard}>
-          <Text style={styles.simulationTitle}>Status Lifecycle Simulation</Text>
+          <Text style={styles.simulationTitle}>Status lifecycle simulation</Text>
           <Text style={styles.simulationDescription}>
-            This control simulates kitchen meal preparation and packaging updates as required by the activity tasks.
+            Simulates canteen meal preparation and packaging updates as specified in the activity tasks.
           </Text>
 
           {nextStatus ? (
             <TouchableOpacity
-              style={styles.simulateButton}
+              style={styles.simulatePill}
               onPress={handleSimulateStatus}
               activeOpacity={0.85}
               accessibilityLabel={`Advance status to ${nextStatus}`}
             >
-              <Text style={styles.simulateButtonText}>
-                Simulate Transition: Move to "{nextStatus}"
+              <Text style={styles.simulatePillText}>
+                Advance stage: Move to "{nextStatus}"
               </Text>
             </TouchableOpacity>
           ) : (
             <View style={styles.completedNotice}>
               <Text style={styles.completedNoticeText}>
-                Order has reached the final Completed state and is saved in your Order History.
+                Order has reached the final Completed state and is saved in your history.
               </Text>
             </View>
           )}
         </View>
 
-        {/* Ordered Food Items Breakdown */}
+        {/* Ordered Food Items Receipt */}
         <View style={styles.itemsCard}>
-          <Text style={styles.itemsCardTitle}>Order Items Receipt</Text>
+          <Text style={styles.itemsCardTitle}>Order receipt</Text>
           {activeOrder.items?.map((item, index) => (
             <View key={`${item.id || item.name}-${index}`} style={styles.itemReceiptRow}>
               <View style={styles.itemReceiptDetails}>
@@ -178,7 +173,7 @@ export default function OrderTrackingScreen({ route, navigation }) {
           <View style={styles.receiptDivider} />
 
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptMuted}>Packaging Container Fee</Text>
+            <Text style={styles.receiptMuted}>Packaging container fee</Text>
             <Text style={styles.receiptMuted}>
               {activeOrder.packagingFee > 0
                 ? formatLKR(activeOrder.packagingFee)
@@ -186,36 +181,36 @@ export default function OrderTrackingScreen({ route, navigation }) {
             </Text>
           </View>
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptMuted}>Payment Method</Text>
+            <Text style={styles.receiptMuted}>Payment method</Text>
             <Text style={styles.receiptMuted}>{activeOrder.paymentMethod}</Text>
           </View>
 
           <View style={styles.receiptDivider} />
 
           <View style={styles.receiptGrandRow}>
-            <Text style={styles.receiptGrandLabel}>Total Paid (LKR)</Text>
+            <Text style={styles.receiptGrandLabel}>Total paid</Text>
             <Text style={styles.receiptGrandValue}>
               {formatLKR(activeOrder.grandTotal)}
             </Text>
           </View>
         </View>
 
-        {/* Navigation Action Buttons */}
+        {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={styles.homeButton}
+            style={styles.homePill}
             onPress={() => navigation.navigate('Home')}
             activeOpacity={0.85}
           >
-            <Text style={styles.homeButtonText}>Return to Canteen Menu</Text>
+            <Text style={styles.homePillText}>Return to canteen menu</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.profileButton}
+            style={styles.profilePill}
             onPress={() => navigation.navigate('Profile')}
             activeOpacity={0.85}
           >
-            <Text style={styles.profileButtonText}>View Order in Profile</Text>
+            <Text style={styles.profilePillText}>View order in profile</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -226,7 +221,7 @@ export default function OrderTrackingScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
   scrollContent: {
     padding: SPACING.lg,
@@ -241,32 +236,31 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: 6,
   },
   emptySubtitle: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textAlign: 'center',
     marginBottom: SPACING.lg,
   },
-  browseButton: {
+  browsePill: {
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xl,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill,
   },
-  browseButtonText: {
-    color: COLORS.white,
+  browsePillText: {
+    color: COLORS.onPrimary,
     fontWeight: FONTS.weights.bold,
   },
   confirmationCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOWS.small,
   },
   confirmationHeader: {
     flexDirection: 'row',
@@ -279,14 +273,15 @@ const styles = StyleSheet.create({
   },
   orderLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
   orderIdText: {
     fontSize: FONTS.sizes.xl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
     marginTop: 2,
+    letterSpacing: -0.5,
   },
   ticketDetails: {
     gap: 8,
@@ -297,103 +292,98 @@ const styles = StyleSheet.create({
   },
   ticketLabel: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   ticketValue: {
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.ink,
   },
   ticketValueHighlight: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.success,
+    color: COLORS.ink,
   },
   verificationBox: {
-    backgroundColor: COLORS.primaryMuted,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.xl,
     padding: SPACING.md,
     alignItems: 'center',
     marginTop: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.primaryLight,
   },
   verificationLabel: {
     fontSize: 10,
-    color: COLORS.primary,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.mute,
+    fontWeight: FONTS.weights.medium,
     textTransform: 'uppercase',
   },
   verificationToken: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
     letterSpacing: 4,
     marginVertical: 4,
   },
   verificationHint: {
     fontSize: 11,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     textAlign: 'center',
   },
   simulationCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: COLORS.accent,
+    borderColor: COLORS.border,
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
   simulationTitle: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.accent,
+    color: COLORS.ink,
     marginBottom: 4,
   },
   simulationDescription: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     lineHeight: 18,
     marginBottom: SPACING.md,
   },
-  simulateButton: {
-    backgroundColor: COLORS.accent,
+  simulatePill: {
+    backgroundColor: COLORS.primary, // Black pill
     paddingVertical: SPACING.md,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill, // 999px pill
     alignItems: 'center',
   },
-  simulateButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.sm,
+  simulatePillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
   completedNotice: {
-    backgroundColor: COLORS.successLight,
+    backgroundColor: COLORS.canvasSoft,
     padding: SPACING.md,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.success,
+    borderRadius: RADIUS.pill,
+    alignItems: 'center',
   },
   completedNoticeText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.success,
+    color: COLORS.ink,
     fontWeight: FONTS.weights.medium,
     textAlign: 'center',
   },
   itemsCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.lg,
-    ...SHADOWS.small,
   },
   itemsCardTitle: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: SPACING.md,
   },
   itemReceiptRow: {
@@ -407,19 +397,19 @@ const styles = StyleSheet.create({
   },
   itemReceiptName: {
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.ink,
   },
   itemReceiptNotes: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     fontStyle: 'italic',
     marginTop: 1,
   },
   itemReceiptPrice: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   receiptDivider: {
     height: 1,
@@ -433,7 +423,7 @@ const styles = StyleSheet.create({
   },
   receiptMuted: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   receiptGrandRow: {
     flexDirection: 'row',
@@ -444,37 +434,35 @@ const styles = StyleSheet.create({
   receiptGrandLabel: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   receiptGrandValue: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
   actionButtons: {
     gap: SPACING.sm,
   },
-  homeButton: {
-    backgroundColor: COLORS.primary,
+  homePill: {
+    backgroundColor: COLORS.primary, // Black pill
     paddingVertical: SPACING.md,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill, // 999px pill
     alignItems: 'center',
   },
-  homeButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.md,
+  homePillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
   },
-  profileButton: {
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+  profilePill: {
+    backgroundColor: COLORS.canvasSoft,
     paddingVertical: SPACING.md,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill, // 999px pill
     alignItems: 'center',
   },
-  profileButtonText: {
-    color: COLORS.textPrimary,
+  profilePillText: {
+    color: COLORS.ink,
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.semibold,
   },

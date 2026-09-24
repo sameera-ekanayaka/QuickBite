@@ -10,16 +10,16 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { MENU_CATEGORIES, MENU_ITEMS, CANTEEN_INFO } from '../constants/canteenData';
 import { formatLKR, sanitizeSearchQuery } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
 import FoodCard from '../components/FoodCard';
 
-// Home Screen for QuickBite campus food ordering app.
-// Displays menu items by category, search bar, active canteen status,
-// and floating cart bar with live item count and LKR totals.
+// Uber-Inspired Home Screen for QuickBite campus food ordering app.
+// Styled with horizontal category chips (999px pills with polarity flip),
+// canvas-soft search input, and a signature black floating cart pill bar.
 export default function HomeScreen({ navigation }) {
   const { width } = useWindowDimensions();
   const { addToCart, itemCount, subtotal } = useCart();
@@ -37,11 +37,9 @@ export default function HomeScreen({ navigation }) {
     const cleanSearch = sanitizeSearchQuery(searchQuery);
 
     return MENU_ITEMS.filter((item) => {
-      // Category match
       const matchesCategory =
         selectedCategory === 'all' || item.category === selectedCategory;
 
-      // Text search match across name, description, ingredients
       const matchesSearch =
         !cleanSearch ||
         item.name.toLowerCase().includes(cleanSearch) ||
@@ -53,21 +51,18 @@ export default function HomeScreen({ navigation }) {
     });
   }, [selectedCategory, searchQuery]);
 
-  // Navigate to item detail view
   const handleItemPress = (item) => {
     navigation.navigate('ItemDetail', { item });
   };
 
-  // Quick add single unit directly from menu card
   const handleQuickAdd = (item) => {
     addToCart(item, 1, '');
-    setFeedbackToast(`Added 1x ${item.name} to cart`);
+    setFeedbackToast(`Added 1x ${item.name} to order`);
     setTimeout(() => {
       setFeedbackToast('');
-    }, 2000);
+    }, 1800);
   };
 
-  // Clear search and category filters
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
@@ -77,27 +72,27 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <Header
-        title="QuickBite Canteen"
+        title="QuickBite"
         subtitle={CANTEEN_INFO.name}
         showBack={false}
         navigation={navigation}
       />
 
-      {/* Canteen announcement banner */}
-      <View style={styles.announcementBanner}>
+      {/* Canteen announcement strip */}
+      <View style={styles.announcementStrip}>
         <View style={styles.statusIndicator} />
         <Text style={styles.announcementText} numberOfLines={1}>
           Open: Counters 1, 2, and 3 active for student pickup
         </Text>
       </View>
 
-      {/* Search Input Bar with clear action */}
+      {/* Search Input in canvas-soft row */}
       <View style={styles.searchSection}>
         <View style={styles.searchBox}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search kottu, rice, rolls, milo, faluda..."
-            placeholderTextColor={COLORS.textMuted}
+            placeholder="Search kottu, rice, rolls, tea, juice..."
+            placeholderTextColor={COLORS.mute}
             value={searchQuery}
             onChangeText={setSearchQuery}
             returnKeyType="search"
@@ -105,7 +100,7 @@ export default function HomeScreen({ navigation }) {
           {searchQuery.length > 0 && (
             <TouchableOpacity
               onPress={() => setSearchQuery('')}
-              style={styles.clearSearchButton}
+              style={styles.clearSearchPill}
               accessibilityLabel="Clear search input"
             >
               <Text style={styles.clearSearchText}>Clear</Text>
@@ -114,7 +109,7 @@ export default function HomeScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Category selection tabs */}
+      {/* Horizontal Category Pill Row */}
       <View style={styles.categoriesContainer}>
         <FlatList
           data={MENU_CATEGORIES}
@@ -157,7 +152,7 @@ export default function HomeScreen({ navigation }) {
 
       {/* Main Menu Grid / List */}
       <FlatList
-        key={numColumns} // Re-render when switching between phone and tablet column counts
+        key={numColumns}
         numColumns={numColumns}
         data={filteredItems}
         keyExtractor={(item) => item.id}
@@ -179,43 +174,43 @@ export default function HomeScreen({ navigation }) {
         ListHeaderComponent={
           <View style={styles.resultsHeader}>
             <Text style={styles.resultsCount}>
-              Showing {filteredItems.length} subsidized canteen items
+              Showing {filteredItems.length} subsidized items
             </Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No Food Items Found</Text>
+            <Text style={styles.emptyTitle}>No items found</Text>
             <Text style={styles.emptySubtitle}>
-              We could not find anything matching "{searchQuery}".
+              We couldn't find anything matching "{searchQuery}".
             </Text>
-            <TouchableOpacity style={styles.resetButton} onPress={resetFilters}>
-              <Text style={styles.resetButtonText}>View All Menu Items</Text>
+            <TouchableOpacity style={styles.resetPill} onPress={resetFilters}>
+              <Text style={styles.resetPillText}>View all menu items</Text>
             </TouchableOpacity>
           </View>
         }
       />
 
-      {/* Floating Bottom Cart Bar */}
+      {/* Floating Bottom Cart Pill Bar */}
       {itemCount > 0 && (
         <View style={styles.floatingCartBar}>
           <View style={styles.cartInfoSection}>
-            <View style={styles.cartCounterBadge}>
-              <Text style={styles.cartCounterText}>{itemCount} items</Text>
+            <View style={styles.cartCounterPill}>
+              <Text style={styles.cartCounterText}>{itemCount}</Text>
             </View>
-            <View style={styles.cartPriceContainer}>
+            <View>
               <Text style={styles.cartSubtotalLabel}>Subtotal</Text>
               <Text style={styles.cartSubtotalValue}>{formatLKR(subtotal)}</Text>
             </View>
           </View>
 
           <TouchableOpacity
-            style={styles.viewCartButton}
+            style={styles.viewCartPill}
             onPress={() => navigation.navigate('Cart')}
             activeOpacity={0.85}
             accessibilityLabel="Proceed to view cart"
           >
-            <Text style={styles.viewCartButtonText}>View Cart</Text>
+            <Text style={styles.viewCartPillText}>View cart</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -226,100 +221,95 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
-  announcementBanner: {
+  announcementStrip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryMuted,
+    backgroundColor: COLORS.canvasSoft,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.xs,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
   statusIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.success,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.ink,
     marginRight: SPACING.sm,
   },
   announcementText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.primary,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.ink,
+    fontWeight: FONTS.weights.medium,
   },
   searchSection: {
     paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.card,
+    paddingVertical: SPACING.md,
+    backgroundColor: COLORS.canvas,
   },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    paddingHorizontal: SPACING.md,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill search bar
+    paddingHorizontal: SPACING.lg,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
-  clearSearchButton: {
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.xs,
+  clearSearchPill: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   clearSearchText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.primary,
+    color: COLORS.mute,
     fontWeight: FONTS.weights.semibold,
   },
   categoriesContainer: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    paddingBottom: SPACING.sm,
+    paddingBottom: SPACING.md,
   },
   categoryListContent: {
     paddingHorizontal: SPACING.lg,
     gap: SPACING.sm,
   },
   categoryPill: {
-    paddingVertical: 7,
+    paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: RADIUS.pill, // 999px pill
+    backgroundColor: COLORS.canvasSoft,
   },
   categoryPillSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primary, // Polarity flip to solid black
   },
   categoryPillText: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.medium,
-    color: COLORS.textSecondary,
+    color: COLORS.ink,
   },
   categoryPillTextSelected: {
-    color: COLORS.white,
+    color: COLORS.onPrimary,
     fontWeight: FONTS.weights.bold,
   },
   toastContainer: {
-    backgroundColor: COLORS.textPrimary,
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.md,
+    backgroundColor: COLORS.blackElevated,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
     marginHorizontal: SPACING.lg,
     marginTop: SPACING.xs,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.pill,
     alignItems: 'center',
   },
   toastText: {
-    color: COLORS.white,
+    color: COLORS.onDark,
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.medium,
   },
@@ -329,12 +319,11 @@ const styles = StyleSheet.create({
   },
   resultsCount: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
-    fontWeight: FONTS.weights.medium,
+    color: COLORS.mute,
   },
   menuListContent: {
     paddingHorizontal: SPACING.lg,
-    paddingBottom: 90, // Leave room for floating cart bar
+    paddingBottom: 95,
     paddingTop: SPACING.xs,
   },
   columnWrapper: {
@@ -358,26 +347,24 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 6,
+    color: COLORS.ink,
+    marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textAlign: 'center',
     marginBottom: SPACING.lg,
   },
-  resetButton: {
-    backgroundColor: COLORS.primaryMuted,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: RADIUS.md,
+  resetPill: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: RADIUS.pill,
   },
-  resetButtonText: {
-    color: COLORS.primary,
-    fontSize: FONTS.sizes.sm,
+  resetPillText: {
+    color: COLORS.ink,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
   floatingCartBar: {
@@ -385,55 +372,52 @@ const styles = StyleSheet.create({
     bottom: SPACING.lg,
     left: SPACING.lg,
     right: SPACING.lg,
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
+    backgroundColor: COLORS.blackElevated, // Polarity flip dark band
+    borderRadius: RADIUS.pill, // Signature 999px floating pill
+    paddingVertical: SPACING.sm,
+    paddingLeft: SPACING.lg,
+    paddingRight: SPACING.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.card,
   },
   cartInfoSection: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.md,
   },
-  cartCounterBadge: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  cartCounterPill: {
+    backgroundColor: COLORS.canvas,
+    width: 28,
+    height: 28,
     borderRadius: RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cartCounterText: {
-    color: COLORS.white,
+    color: COLORS.primary,
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
-  cartPriceContainer: {
-    justifyContent: 'center',
-  },
   cartSubtotalLabel: {
-    fontSize: 10,
-    color: COLORS.textMuted,
+    fontSize: 9,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
   cartSubtotalValue: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.onDark,
   },
-  viewCartButton: {
-    backgroundColor: COLORS.primary,
+  viewCartPill: {
+    backgroundColor: COLORS.canvas, // White pill CTA on black band
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill, // 999px pill
   },
-  viewCartButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.sm,
+  viewCartPillText: {
+    color: COLORS.ink,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
 });

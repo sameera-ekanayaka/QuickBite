@@ -9,28 +9,28 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { formatLKR } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 import Header from '../components/Header';
 import Badge from '../components/Badge';
 
-// User Profile Screen for QuickBite campus food ordering app.
-// Displays student identification credentials, campus canteen pass balance,
-// and chronological history of past orders.
+// Uber-Inspired Student Profile Screen.
+// Designed with 16px profile cards, monochrome balance cards,
+// and 999px pill account actions.
 export default function ProfileScreen({ navigation }) {
   const { currentUser, logout, isGuest } = useAuth();
   const { orderHistory, activeOrders } = useOrders();
 
   const handleLogout = () => {
     Alert.alert(
-      'Sign Out',
+      'Sign out',
       'Are you sure you want to sign out from QuickBite?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Sign Out',
+          text: 'Sign out',
           style: 'destructive',
           onPress: () => {
             logout();
@@ -47,7 +47,7 @@ export default function ProfileScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <Header
-        title="Student Profile"
+        title="Student account"
         subtitle="University of Kelaniya"
         showBack
         showProfile={false}
@@ -58,7 +58,7 @@ export default function ProfileScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Student Credential ID Card */}
+        {/* Student Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarRow}>
             <View style={styles.avatarContainer}>
@@ -82,8 +82,8 @@ export default function ProfileScreen({ navigation }) {
                 Reg No: {currentUser?.studentId || 'PS/2021/045'}
               </Text>
               <Badge
-                label={isGuest ? 'Guest Access' : 'Verified Undergraduate'}
-                variant={isGuest ? 'warning' : 'success'}
+                label={isGuest ? 'Guest access' : 'Verified student'}
+                variant={isGuest ? 'default' : 'primary'}
                 size="small"
                 style={styles.studentBadge}
               />
@@ -104,13 +104,13 @@ export default function ProfileScreen({ navigation }) {
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Official Email</Text>
+              <Text style={styles.detailLabel}>Email</Text>
               <Text style={styles.detailValue}>
                 {currentUser?.email || 'ps2021045@stu.kln.ac.lk'}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Alert Phone</Text>
+              <Text style={styles.detailLabel}>Alert phone</Text>
               <Text style={styles.detailValue}>
                 {currentUser?.phone || '0714589231'}
               </Text>
@@ -128,18 +128,18 @@ export default function ProfileScreen({ navigation }) {
               </Text>
             </View>
             <View style={styles.passPill}>
-              <Text style={styles.passPillText}>Active Balance</Text>
+              <Text style={styles.passPillText}>Active balance</Text>
             </View>
           </View>
           <Text style={styles.passNotice}>
-            Usable at University of Kelaniya Main Canteen, Science Faculty Canteen, and Kannangara Canteen counters.
+            Usable at Main Canteen, Science Faculty Canteen, and Kannangara Canteen counters.
           </Text>
         </View>
 
-        {/* Order History Section */}
+        {/* Order History */}
         <View style={styles.historySection}>
           <Text style={styles.historyTitle}>
-            Past Order History ({allOrders.length})
+            Past orders ({allOrders.length})
           </Text>
 
           {allOrders.length === 0 ? (
@@ -161,7 +161,7 @@ export default function ProfileScreen({ navigation }) {
                     </View>
                     <Badge
                       label={order.status}
-                      variant={isOrderCompleted ? 'success' : 'primary'}
+                      variant={isOrderCompleted ? 'primary' : 'outline'}
                       size="small"
                     />
                   </View>
@@ -173,7 +173,7 @@ export default function ProfileScreen({ navigation }) {
                         style={styles.orderItemRow}
                         numberOfLines={1}
                       >
-                        - {item.quantity}x {item.name} ({formatLKR(item.price)})
+                        • {item.quantity}x {item.name} ({formatLKR(item.price)})
                       </Text>
                     ))}
                   </View>
@@ -190,14 +190,14 @@ export default function ProfileScreen({ navigation }) {
           )}
         </View>
 
-        {/* Sign Out Button */}
+        {/* Sign Out Pill */}
         <TouchableOpacity
-          style={styles.logoutButton}
+          style={styles.logoutPill}
           onPress={handleLogout}
           activeOpacity={0.8}
           accessibilityLabel="Sign out of student account"
         >
-          <Text style={styles.logoutButtonText}>Sign Out Account</Text>
+          <Text style={styles.logoutPillText}>Sign out</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -207,20 +207,19 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
   scrollContent: {
     padding: SPACING.lg,
     paddingBottom: SPACING.huge,
   },
   profileCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
   avatarRow: {
     flexDirection: 'row',
@@ -231,19 +230,18 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.divider,
   },
   avatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.primary,
+    width: 56,
+    height: 56,
+    borderRadius: RADIUS.full, // Circular
+    backgroundColor: COLORS.primary, // Solid black
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,
   },
   avatarText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.xl,
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
-    letterSpacing: 1,
   },
   profileMeta: {
     flex: 1,
@@ -251,11 +249,11 @@ const styles = StyleSheet.create({
   studentName: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   studentRegId: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     marginTop: 2,
   },
   studentBadge: {
@@ -271,19 +269,17 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   detailValue: {
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.ink,
   },
   passCard: {
-    backgroundColor: COLORS.primaryMuted,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.blackElevated, // Polarity flip dark surface
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.primaryLight,
     marginBottom: SPACING.lg,
   },
   passHeader: {
@@ -294,44 +290,43 @@ const styles = StyleSheet.create({
   },
   passLabel: {
     fontSize: 10,
-    color: COLORS.primary,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
   passBalance: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.onDark,
     marginTop: 2,
   },
   passPill: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.hairlineMid,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: RADIUS.pill, // 999px pill
   },
   passPillText: {
-    color: COLORS.white,
+    color: COLORS.onDark,
     fontSize: 10,
-    fontWeight: FONTS.weights.bold,
+    fontWeight: FONTS.weights.semibold,
   },
   passNotice: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.mute,
     lineHeight: 16,
   },
   historySection: {
     marginBottom: SPACING.lg,
   },
   historyTitle: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: SPACING.sm,
   },
   emptyHistoryCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     alignItems: 'center',
     borderWidth: 1,
@@ -339,17 +334,16 @@ const styles = StyleSheet.create({
   },
   emptyHistoryText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textAlign: 'center',
   },
   orderCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.sm,
-    ...SHADOWS.small,
   },
   orderCardHeader: {
     flexDirection: 'row',
@@ -358,13 +352,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   orderCardId: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
   orderCardDate: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   orderItemsList: {
     marginVertical: 4,
@@ -375,7 +369,7 @@ const styles = StyleSheet.create({
   },
   orderItemRow: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     marginVertical: 1,
   },
   orderCardFooter: {
@@ -386,24 +380,22 @@ const styles = StyleSheet.create({
   },
   counterNote: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   orderCardTotal: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
-  logoutButton: {
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.danger,
-    borderRadius: RADIUS.lg,
+  logoutPill: {
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: RADIUS.pill, // 999px pill
     paddingVertical: SPACING.md,
     alignItems: 'center',
   },
-  logoutButtonText: {
-    color: COLORS.danger,
+  logoutPillText: {
+    color: COLORS.ink,
     fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.bold,
+    fontWeight: FONTS.weights.semibold,
   },
 });

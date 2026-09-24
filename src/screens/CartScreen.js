@@ -9,16 +9,16 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { formatLKR } from '../utils/formatters';
 import { useCart, MIN_ITEM_QUANTITY, MAX_ITEM_QUANTITY } from '../context/CartContext';
 import Header from '../components/Header';
 import QuantitySelector from '../components/QuantitySelector';
 import Badge from '../components/Badge';
 
-// Cart Screen for QuickBite campus food ordering app.
-// Reads shared state from CartContext, calculates subtotal, container fee,
-// and enforces empty cart blocking before proceeding to checkout.
+// Uber-Inspired Cart Screen.
+// Designed with 16px line-item cards, pill toggles,
+// and canonical 999px black pill checkout CTA.
 export default function CartScreen({ navigation }) {
   const {
     cartItems,
@@ -33,11 +33,10 @@ export default function CartScreen({ navigation }) {
     grandTotal,
   } = useCart();
 
-  // Handle quantity decrement with confirmation prompt if quantity reaches 0
   const handleDecrement = (cartItem) => {
     if (cartItem.quantity <= 1) {
       Alert.alert(
-        'Remove Item',
+        'Remove item',
         `Remove "${cartItem.item.name}" from your order?`,
         [
           { text: 'Cancel', style: 'cancel' },
@@ -66,19 +65,18 @@ export default function CartScreen({ navigation }) {
   const handleClearAll = () => {
     if (cartItems.length === 0) return;
     Alert.alert(
-      'Clear Order',
+      'Clear order',
       'Are you sure you want to remove all items from your order?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear All', style: 'destructive', onPress: clearCart },
+        { text: 'Clear all', style: 'destructive', onPress: clearCart },
       ]
     );
   };
 
-  // Navigate to checkout with validation check
   const handleProceedToCheckout = () => {
     if (cartItems.length === 0) {
-      Alert.alert('Empty Order', 'Please add at least one canteen item to proceed.');
+      Alert.alert('Empty order', 'Please add at least one canteen item to proceed.');
       return;
     }
     navigation.navigate('Checkout');
@@ -88,8 +86,8 @@ export default function CartScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <Header
-        title="Your Canteen Order"
-        subtitle={`${itemCount} items selected`}
+        title="Your order"
+        subtitle={`${itemCount} items`}
         showBack
         showCart={false}
         navigation={navigation}
@@ -97,34 +95,34 @@ export default function CartScreen({ navigation }) {
 
       {cartItems.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <View style={styles.emptyBadge}>
-            <Text style={styles.emptyBadgeText}>0 ITEMS</Text>
+          <View style={styles.emptyPillBadge}>
+            <Text style={styles.emptyPillText}>0 items</Text>
           </View>
-          <Text style={styles.emptyTitle}>Your Cart is Empty</Text>
+          <Text style={styles.emptyTitle}>Your cart is empty</Text>
           <Text style={styles.emptySubtitle}>
-            Browse the University of Kelaniya canteen menu to pre-order meals and skip the queue.
+            Add items from the University of Kelaniya canteen menu to pre-order and skip the queue.
           </Text>
           <TouchableOpacity
-            style={styles.browseButton}
+            style={styles.browsePill}
             onPress={() => navigation.navigate('Home')}
             activeOpacity={0.85}
           >
-            <Text style={styles.browseButtonText}>Browse Menu Items</Text>
+            <Text style={styles.browsePillText}>Browse menu items</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.container}>
-          {/* Order Header Actions */}
+          {/* Top Actions */}
           <View style={styles.actionHeader}>
             <Text style={styles.itemsSummaryText}>
               Review your items before checkout
             </Text>
             <TouchableOpacity onPress={handleClearAll}>
-              <Text style={styles.clearAllText}>Clear All</Text>
+              <Text style={styles.clearAllText}>Clear all</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Cart Items List */}
+          {/* Cart List */}
           <FlatList
             data={cartItems}
             keyExtractor={(item) => item.id}
@@ -142,7 +140,7 @@ export default function CartScreen({ navigation }) {
                       </Text>
                       <Badge
                         label={cartItem.item.counter}
-                        variant="primary"
+                        variant="outline"
                         size="small"
                         style={styles.counterBadge}
                       />
@@ -165,7 +163,7 @@ export default function CartScreen({ navigation }) {
                   ) : null}
 
                   <View style={styles.cartCardBottom}>
-                    <View style={styles.priceBreakdown}>
+                    <View>
                       <Text style={styles.unitPriceText}>
                         {formatLKR(cartItem.item.price)} each
                       </Text>
@@ -191,49 +189,49 @@ export default function CartScreen({ navigation }) {
                 {/* Takeaway / Dine In Selector */}
                 <View style={styles.orderTypeCard}>
                   <View style={styles.orderTypeInfo}>
-                    <Text style={styles.orderTypeTitle}>Order Packaging Type</Text>
+                    <Text style={styles.orderTypeTitle}>Packaging preference</Text>
                     <Text style={styles.orderTypeDescription}>
                       {isTakeaway
-                        ? 'Takeaway Box (+LKR 20 eco-friendly packaging)'
-                        : 'Dine-In Plate (Served in canteen dining hall)'}
+                        ? 'Takeaway box (+LKR 20 eco-friendly packaging)'
+                        : 'Dine-in plate (Canteen dining hall)'}
                     </Text>
                   </View>
 
                   <TouchableOpacity
                     style={[
-                      styles.toggleButton,
-                      isTakeaway ? styles.toggleTakeaway : styles.toggleDineIn,
+                      styles.togglePill,
+                      isTakeaway ? styles.togglePillTakeaway : styles.togglePillDineIn,
                     ]}
                     onPress={toggleTakeaway}
                     activeOpacity={0.8}
                   >
                     <Text
                       style={[
-                        styles.toggleButtonText,
+                        styles.togglePillText,
                         isTakeaway
                           ? styles.toggleTextTakeaway
                           : styles.toggleTextDineIn,
                       ]}
                     >
-                      {isTakeaway ? 'Takeaway' : 'Dine In'}
+                      {isTakeaway ? 'Takeaway' : 'Dine in'}
                     </Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* Subsidized Bill Breakdown */}
                 <View style={styles.billCard}>
-                  <Text style={styles.billTitle}>Bill Breakdown (LKR)</Text>
+                  <Text style={styles.billTitle}>Bill breakdown (LKR)</Text>
 
                   <View style={styles.billRow}>
                     <Text style={styles.billLabel}>
-                      Items Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})
+                      Items subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})
                     </Text>
                     <Text style={styles.billValue}>{formatLKR(subtotal)}</Text>
                   </View>
 
                   <View style={styles.billRow}>
                     <Text style={styles.billLabel}>
-                      Takeaway Container Fee
+                      Takeaway packaging fee
                     </Text>
                     <Text style={styles.billValue}>
                       {packagingFee > 0 ? formatLKR(packagingFee) : 'LKR 0.00 (Dine-in)'}
@@ -243,15 +241,15 @@ export default function CartScreen({ navigation }) {
                   <View style={styles.billDivider} />
 
                   <View style={styles.billRowGrand}>
-                    <Text style={styles.grandTotalLabel}>Grand Total</Text>
+                    <Text style={styles.grandTotalLabel}>Grand total</Text>
                     <Text style={styles.grandTotalValue}>
                       {formatLKR(grandTotal)}
                     </Text>
                   </View>
 
-                  <View style={styles.subsidyBadge}>
-                    <Text style={styles.subsidyBadgeText}>
-                      University Welfare Subsidized Rates Included
+                  <View style={styles.subsidyNotice}>
+                    <Text style={styles.subsidyNoticeText}>
+                      University student subsidized rates included
                     </Text>
                   </View>
                 </View>
@@ -259,20 +257,20 @@ export default function CartScreen({ navigation }) {
             }
           />
 
-          {/* Sticky Checkout Button Bar */}
+          {/* Sticky Checkout Pill Bar */}
           <View style={styles.checkoutBar}>
-            <View style={styles.checkoutPriceContainer}>
-              <Text style={styles.checkoutLabel}>Total to Pay</Text>
+            <View>
+              <Text style={styles.checkoutLabel}>Total to pay</Text>
               <Text style={styles.checkoutAmount}>{formatLKR(grandTotal)}</Text>
             </View>
 
             <TouchableOpacity
-              style={styles.checkoutButton}
+              style={styles.checkoutPill}
               onPress={handleProceedToCheckout}
               activeOpacity={0.85}
-              accessibilityLabel="Proceed to University Checkout"
+              accessibilityLabel="Proceed to checkout"
             >
-              <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+              <Text style={styles.checkoutPillText}>Proceed to checkout</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -284,7 +282,7 @@ export default function CartScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvas,
   },
   container: {
     flex: 1,
@@ -295,31 +293,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
   itemsSummaryText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   clearAllText: {
     fontSize: FONTS.sizes.xs,
     color: COLORS.danger,
-    fontWeight: FONTS.weights.bold,
+    fontWeight: FONTS.weights.semibold,
   },
   listContent: {
     padding: SPACING.lg,
     paddingBottom: 110,
   },
   cartCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.canvas,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.md,
     marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOWS.small,
   },
   cartCardTop: {
     flexDirection: 'row',
@@ -333,7 +330,7 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: 4,
   },
   counterBadge: {
@@ -345,26 +342,24 @@ const styles = StyleSheet.create({
   },
   removeButtonText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.danger,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.mute,
+    fontWeight: FONTS.weights.medium,
   },
   notesContainer: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.canvasSoft,
     padding: SPACING.sm,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.md,
     marginTop: SPACING.sm,
-    borderLeftWidth: 2,
-    borderLeftColor: COLORS.primaryLight,
   },
   notesLabel: {
     fontSize: 10,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
   notesText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     marginTop: 2,
   },
   cartCardBottom: {
@@ -376,23 +371,20 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.divider,
   },
-  priceBreakdown: {
-    justifyContent: 'center',
-  },
   unitPriceText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
   },
   lineTotalText: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
   footerSection: {
     marginTop: SPACING.md,
   },
   orderTypeCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderRadius: RADIUS.xl,
     padding: SPACING.md,
     borderWidth: 1,
@@ -401,7 +393,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
   orderTypeInfo: {
     flex: 1,
@@ -410,49 +401,45 @@ const styles = StyleSheet.create({
   orderTypeTitle: {
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   orderTypeDescription: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.body,
     marginTop: 2,
   },
-  toggleButton: {
+  togglePill: {
     paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
+    paddingHorizontal: 16,
+    borderRadius: RADIUS.pill, // 999px pill
   },
-  toggleTakeaway: {
-    backgroundColor: COLORS.primaryMuted,
-    borderColor: COLORS.primary,
+  togglePillTakeaway: {
+    backgroundColor: COLORS.primary, // Black
   },
-  toggleDineIn: {
-    backgroundColor: COLORS.background,
-    borderColor: COLORS.borderDark,
+  togglePillDineIn: {
+    backgroundColor: COLORS.canvasSoft,
   },
-  toggleButtonText: {
+  togglePillText: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
   },
   toggleTextTakeaway: {
-    color: COLORS.primary,
+    color: COLORS.onPrimary,
   },
   toggleTextDineIn: {
-    color: COLORS.textSecondary,
+    color: COLORS.ink,
   },
   billCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOWS.small,
   },
   billTitle: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
     marginBottom: SPACING.md,
   },
   billRow: {
@@ -461,13 +448,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   billLabel: {
-    fontSize: FONTS.sizes.sm,
-    color: COLORS.textSecondary,
+    fontSize: FONTS.sizes.xs,
+    color: COLORS.body,
   },
   billValue: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.medium,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   billDivider: {
     height: 1,
@@ -481,26 +468,26 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.xs,
   },
   grandTotalLabel: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.ink,
   },
   grandTotalValue: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
-  subsidyBadge: {
+  subsidyNotice: {
     marginTop: SPACING.md,
-    backgroundColor: COLORS.primaryMuted,
+    backgroundColor: COLORS.canvasSoft,
     padding: SPACING.xs,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.pill,
     alignItems: 'center',
   },
-  subsidyBadgeText: {
+  subsidyNoticeText: {
     fontSize: 10,
-    color: COLORS.primary,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.body,
+    fontWeight: FONTS.weights.medium,
   },
   emptyContainer: {
     flex: 1,
@@ -508,40 +495,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: SPACING.xl,
   },
-  emptyBadge: {
-    backgroundColor: COLORS.border,
-    paddingHorizontal: 12,
+  emptyPillBadge: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: RADIUS.full,
+    borderRadius: RADIUS.pill,
     marginBottom: SPACING.md,
   },
-  emptyBadgeText: {
+  emptyPillText: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textMuted,
+    color: COLORS.ink,
   },
   emptyTitle: {
     fontSize: FONTS.sizes.xl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 8,
+    color: COLORS.ink,
+    marginBottom: 6,
   },
   emptySubtitle: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: SPACING.xl,
   },
-  browseButton: {
-    backgroundColor: COLORS.primary,
+  browsePill: {
+    backgroundColor: COLORS.primary, // Black pill
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xxl,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.pill, // 999px pill
   },
-  browseButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.md,
+  browsePillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
   },
   checkoutBar: {
@@ -549,7 +536,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.canvas,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     paddingHorizontal: SPACING.lg,
@@ -557,30 +544,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...SHADOWS.medium,
-  },
-  checkoutPriceContainer: {
-    justifyContent: 'center',
   },
   checkoutLabel: {
     fontSize: 10,
-    color: COLORS.textMuted,
+    color: COLORS.mute,
     textTransform: 'uppercase',
   },
   checkoutAmount: {
-    fontSize: FONTS.sizes.lg,
+    fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
-  checkoutButton: {
-    backgroundColor: COLORS.primary,
+  checkoutPill: {
+    backgroundColor: COLORS.primary, // Signature 999px black pill
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xl,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.pill,
   },
-  checkoutButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.md,
+  checkoutPillText: {
+    color: COLORS.onPrimary,
+    fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
   },
 });

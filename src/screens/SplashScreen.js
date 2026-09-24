@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { COLORS, FONTS, RADIUS, SPACING, SHADOWS } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { CANTEEN_INFO } from '../constants/canteenData';
 
-// Splash Screen for QuickBite campus food ordering app.
-// Displays University of Kelaniya branding and canteen slogan.
-// Automatically transitions to Login screen or allows manual advance.
+// Uber-Inspired Splash Screen for QuickBite campus food ordering app.
+// High-contrast black-and-white layout with bold display typography
+// and a signature pill CTA.
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
-    // Automated timer transition (2 seconds) as per smooth navigation requirements
+    // Automated timer transition as per smooth navigation requirements
     const timer = setTimeout(() => {
       navigation.replace('Login');
     }, 2200);
@@ -26,16 +26,14 @@ export default function SplashScreen({ navigation }) {
       <StatusBar style="light" />
       <View style={styles.container}>
         <View style={styles.heroSection}>
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoInitial}>QB</Text>
+          <View style={styles.monogram}>
+            <Text style={styles.monogramText}>QB</Text>
           </View>
           <Text style={styles.appName}>QuickBite</Text>
           <Text style={styles.institutionName}>University of Kelaniya</Text>
-          <View style={styles.sloganContainer}>
-            <Text style={styles.sloganText}>
-              Skip the canteen queue between lectures
-            </Text>
-          </View>
+          <Text style={styles.headline}>
+            Skip the canteen queue between lectures.
+          </Text>
         </View>
 
         <View style={styles.cardInfo}>
@@ -45,25 +43,25 @@ export default function SplashScreen({ navigation }) {
             Daily Service: {CANTEEN_INFO.operatingHours}
           </Text>
           <View style={styles.badgeRow}>
-            <View style={styles.infoPill}>
-              <Text style={styles.infoPillText}>Subsidized Student Prices</Text>
+            <View style={styles.pillChip}>
+              <Text style={styles.pillChipText}>Subsidized Student Rates</Text>
             </View>
-            <View style={styles.infoPill}>
-              <Text style={styles.infoPillText}>Express Counter Pickup</Text>
+            <View style={styles.pillChip}>
+              <Text style={styles.pillChipText}>Express Counter Pickup</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.footerSection}>
           <TouchableOpacity
-            style={styles.proceedButton}
+            style={styles.proceedPill}
             onPress={handleManualProceed}
             activeOpacity={0.85}
             accessibilityLabel="Proceed to Canteen Login"
           >
-            <Text style={styles.proceedButtonText}>Enter Canteen</Text>
+            <Text style={styles.proceedPillText}>Enter Canteen</Text>
           </TouchableOpacity>
-          <Text style={styles.versionText}>Version 1.0.0 (MVP) - Dalugama Campus</Text>
+          <Text style={styles.versionText}>Dalugama Campus MVP</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -73,7 +71,7 @@ export default function SplashScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary, // Pure black surface
   },
   container: {
     flex: 1,
@@ -82,117 +80,102 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heroSection: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    width: '100%',
     marginTop: SPACING.huge,
   },
-  logoBadge: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
-    backgroundColor: COLORS.white,
+  monogram: {
+    width: 64,
+    height: 64,
+    borderRadius: RADIUS.xl, // 16px
+    backgroundColor: COLORS.canvas,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SPACING.md,
-    ...SHADOWS.card,
+    marginBottom: SPACING.lg,
   },
-  logoInitial: {
-    fontSize: 38,
+  monogramText: {
+    fontSize: 26,
     fontWeight: FONTS.weights.bold,
     color: COLORS.primary,
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   appName: {
-    fontSize: 34,
+    fontSize: FONTS.sizes.displayXl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.white,
-    letterSpacing: 0.5,
+    color: COLORS.onPrimary,
+    letterSpacing: -0.5,
   },
   institutionName: {
     fontSize: FONTS.sizes.md,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.accentLight,
+    fontWeight: FONTS.weights.medium,
+    color: COLORS.mute,
     marginTop: 2,
-    letterSpacing: 0.3,
   },
-  sloganContainer: {
+  headline: {
+    fontSize: FONTS.sizes.lg,
+    color: COLORS.onPrimary,
     marginTop: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: RADIUS.full,
-  },
-  sloganText: {
-    fontSize: FONTS.sizes.sm,
-    color: COLORS.white,
-    textAlign: 'center',
+    lineHeight: 26,
   },
   cardInfo: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.blackElevated, // Elevated dark surface
     width: '100%',
-    borderRadius: RADIUS.xl,
+    borderRadius: RADIUS.xl, // 16px
     padding: SPACING.xl,
-    alignItems: 'center',
-    ...SHADOWS.medium,
   },
   canteenTitle: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    textAlign: 'center',
+    color: COLORS.onDark,
   },
   canteenLocation: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
+    color: COLORS.mute,
     marginTop: 4,
   },
   canteenHours: {
     fontSize: FONTS.sizes.xs,
-    fontWeight: FONTS.weights.medium,
-    color: COLORS.primary,
+    color: COLORS.onDark,
     marginTop: 6,
+    fontWeight: FONTS.weights.medium,
   },
   badgeRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.xs,
-    justifyContent: 'center',
     marginTop: SPACING.md,
   },
-  infoPill: {
-    backgroundColor: COLORS.primaryMuted,
-    borderRadius: RADIUS.full,
+  pillChip: {
+    backgroundColor: COLORS.hairlineMid,
+    borderRadius: RADIUS.pill, // 999px pill
     paddingHorizontal: SPACING.md,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: COLORS.primaryLight,
+    paddingVertical: 5,
   },
-  infoPillText: {
+  pillChipText: {
     fontSize: FONTS.sizes.xs,
-    color: COLORS.primary,
-    fontWeight: FONTS.weights.semibold,
+    color: COLORS.onDark,
+    fontWeight: FONTS.weights.medium,
   },
   footerSection: {
     width: '100%',
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
-  proceedButton: {
-    backgroundColor: COLORS.white,
+  proceedPill: {
+    backgroundColor: COLORS.canvas, // White secondary pill on dark hero
     width: '100%',
-    paddingVertical: SPACING.md,
-    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.lg,
+    borderRadius: RADIUS.pill, // Signature 999px pill
     alignItems: 'center',
     marginBottom: SPACING.md,
-    ...SHADOWS.small,
   },
-  proceedButtonText: {
+  proceedPillText: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.primary,
+    color: COLORS.ink,
   },
   versionText: {
     fontSize: FONTS.sizes.xs,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: COLORS.mute,
   },
 });

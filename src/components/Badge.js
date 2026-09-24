@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 
-// Visual text badge component used for food tags, dietary markers,
-// counters, and order statuses without relying on emojis.
+// Uber-Inspired Pill Badge Component.
+// Uses the signature 999px pill geometry for metadata chips,
+// dietary markers, and order status indicators.
 export default function Badge({
   label,
   variant = 'default',
@@ -15,18 +16,23 @@ export default function Badge({
     switch (variant) {
       case 'primary':
         return {
-          container: { backgroundColor: COLORS.primaryMuted, borderColor: COLORS.primary },
-          text: { color: COLORS.primary },
+          container: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+          text: { color: COLORS.onPrimary },
+        };
+      case 'dark':
+        return {
+          container: { backgroundColor: COLORS.blackElevated, borderColor: COLORS.blackElevated },
+          text: { color: COLORS.onDark },
         };
       case 'success':
         return {
-          container: { backgroundColor: COLORS.successLight, borderColor: COLORS.success },
-          text: { color: COLORS.success },
+          container: { backgroundColor: COLORS.canvasSoft, borderColor: COLORS.ink },
+          text: { color: COLORS.ink, fontWeight: FONTS.weights.bold },
         };
       case 'warning':
         return {
-          container: { backgroundColor: COLORS.warningLight, borderColor: COLORS.warning },
-          text: { color: COLORS.warning },
+          container: { backgroundColor: COLORS.canvasSoft, borderColor: COLORS.surfacePressed },
+          text: { color: COLORS.ink },
         };
       case 'danger':
         return {
@@ -35,18 +41,18 @@ export default function Badge({
         };
       case 'info':
         return {
-          container: { backgroundColor: COLORS.infoLight, borderColor: COLORS.info },
-          text: { color: COLORS.info },
+          container: { backgroundColor: COLORS.canvasSoft, borderColor: COLORS.surfacePressed },
+          text: { color: COLORS.body },
         };
       case 'outline':
         return {
-          container: { backgroundColor: 'transparent', borderColor: COLORS.borderDark },
-          text: { color: COLORS.textSecondary },
+          container: { backgroundColor: COLORS.canvas, borderColor: COLORS.surfacePressed },
+          text: { color: COLORS.ink },
         };
       default:
         return {
-          container: { backgroundColor: COLORS.border, borderColor: 'transparent' },
-          text: { color: COLORS.textSecondary },
+          container: { backgroundColor: COLORS.canvasSoft, borderColor: 'transparent' },
+          text: { color: COLORS.ink },
         };
     }
   };
@@ -79,23 +85,24 @@ export default function Badge({
 
 const styles = StyleSheet.create({
   badge: {
+    borderRadius: RADIUS.pill, // Signature Uber 999px pill radius
     borderWidth: 1,
-    borderRadius: RADIUS.full,
     alignSelf: 'flex-start',
     justifyContent: 'center',
     alignItems: 'center',
   },
   badgeSmall: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 3,
   },
   badgeMedium: {
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.xs,
   },
   text: {
-    fontWeight: FONTS.weights.semibold,
+    fontWeight: FONTS.weights.medium,
     textAlign: 'center',
+    letterSpacing: 0,
   },
   textSmall: {
     fontSize: FONTS.sizes.xs,
